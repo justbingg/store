@@ -4,10 +4,9 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.pinyougou.pojo.TbBrand;
 import com.pinyougou.sellergoods.service.BrandService;
 import com.pinyougou.vo.PageResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import com.pinyougou.vo.Result;
+import org.springframework.web.bind.annotation.*;
+
 
 import java.util.List;
 
@@ -31,6 +30,27 @@ public class BrandController {
 
 	@GetMapping("/testPage")
 	public List<TbBrand> testPage(Integer page, Integer rows) {
+
 		return (List<TbBrand>) brandService.findPage(page,rows).getRows();
 	}
+
+	/**
+	 * 保存
+	 * @param tbBrand
+	 * @return
+	 */
+	@PostMapping("/add")
+	public Result add(@RequestBody TbBrand tbBrand){
+		try {
+			System.out.println(tbBrand.getName());
+			System.out.println(tbBrand.getFirstChar());
+			brandService.add(tbBrand);
+			return Result.ok("新增成功");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return Result.fail("新增失败");
+
+	}
+
 }

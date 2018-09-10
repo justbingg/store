@@ -16,18 +16,21 @@
     <script src="../plugins/angularjs/pagination.js"></script>
 
     <script type="text/javascript">
+
+
         var app = angular.module("pinyougou", ['pagination']);
         app.controller("brandController", function ($scope, $http) {
             //初始化分页参数
             $scope.paginationConf = {
-                currentPage:1,// 当前页号
-                totalItems:10,// 总记录数
-                itemsPerPage:10,// 页大小
-                perPageOptions:[10, 20, 30, 40, 50],// 可选择的每页大小
+                currentPage: 1,// 当前页号
+                totalItems: 10,// 总记录数
+                itemsPerPage: 10,// 页大小
+                perPageOptions: [10, 20, 30, 40, 50],// 可选择的每页大小
                 onChange: function () {// 当上述的参数发生变化了后触发
-                   $scope.reloadList();
+                    $scope.reloadList();
                 }
             };
+
 
             //加载数据表格
             $scope.reloadList = function () {
@@ -36,15 +39,31 @@
             };
 
             //查询所有列表数据并绑定到list对象
-            $scope.findPage = function (page,rows) {
-                $http.get("../brand/findPage.do?page="+page+"&rows="+rows).success(function (response) {
+            $scope.findPage = function (page, rows) {
+                $http.get("../brand/findPage.do?page=" + page + "&rows=" + rows).success(function (response) {
                     //更新记录列表
                     $scope.list = response.rows;
                     //更新总记录数
                     $scope.paginationConf.totalItems = response.total;
                 });
             };
+
+            //保存
+            $scope.save = function(){
+                $http.post("../brand/add.do", $scope.entity).success(function (response) {
+                   if(response.success){
+                       //重新加载列表
+                       $scope.reloadList();
+                   }else{
+                       alert(response.message);
+                   }
+                });
+            };
+
+
+
         });
+
     </script>
 
 
@@ -66,7 +85,7 @@
         <div class="pull-left">
             <div class="form-group form-inline">
                 <div class="btn-group">
-                    <button type="button" class="btn btn-default" title="新建" data-toggle="modal" data-target="#editModal"><i class="fa fa-file-o"></i> 新建</button>
+                    <button type="button" class="btn btn-default" title="新建" data-toggle="modal" data-target="#editModal" ng-click="entity={}"><i class="fa fa-file-o"></i> 新建</button>
                     <button type="button" class="btn btn-default" title="删除"><i class="fa fa-trash-o"></i> 删除</button>
                     <button type="button" class="btn btn-default" title="刷新" onclick="window.location.reload();"><i class="fa fa-refresh"></i> 刷新</button>
                 </div>
@@ -112,10 +131,11 @@
     </div>
     <!-- 数据表格 /-->
 
+    <!-- 分页导航条 -->
+    <tm-pagination conf="paginationConf"/>
 
 </div>
-<!-- 分页导航条 -->
-<tm-pagination conf="paginationConf"/>
+
 <!-- /.box-body -->
 
 <!-- 编辑窗口 -->
@@ -130,21 +150,20 @@
                 <table class="table table-bordered table-striped" width="800px">
                     <tr>
                         <td>品牌名称</td>
-                        <td><input class="form-control" placeholder="品牌名称"></td>
+                        <td><input class="form-control" placeholder="品牌名称" ng-model="entity.name"></td>
                     </tr>
                     <tr>
                         <td>首字母</td>
-                        <td><input class="form-control" placeholder="首字母"></td>
+                        <td><input class="form-control" placeholder="首字母" ng-model="entity.firstChar"></td>
                     </tr>
                 </table>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-success" data-dismiss="modal" aria-hidden="true">保存</button>
+                <button class="btn btn-success" data-dismiss="modal" aria-hidden="true" ng-click="save()">保存</button>
                 <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">关闭</button>
             </div>
         </div>
     </div>
 </div>
-
 </body>
 </html>
